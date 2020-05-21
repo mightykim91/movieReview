@@ -24,6 +24,11 @@ def index(request):
 
 def detail(request, movie_pk):
     movie = Movie.objects.get(pk=movie_pk)
+    user = request.user
+    color = 'black'
+    if user.like_movies.filter(pk=movie_pk).exists():
+        color = 'crimson'
+
     genres = []
     for genre in list(movie.genres.all().values('name')):
         genres.append(genre["name"])
@@ -37,6 +42,7 @@ def detail(request, movie_pk):
         'vote_average': movie.vote_average,
         'overview': movie.overview,
         'genres': genres,
+        'color': color,
 
     }
     return JsonResponse(context)
@@ -45,9 +51,11 @@ def detail(request, movie_pk):
 def like(request, movie_pk):
     user = request.user
     movie = get_object_or_404(Movie, pk=movie_pk)
-    liked = False
+
     if movie.like_users.filter(pk=user.pk).exists():
         movie.like_users.remove(user)
+        liked = False
+
     else:
         movie.like_users.add(user)
         liked = True
