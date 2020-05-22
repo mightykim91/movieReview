@@ -17,6 +17,7 @@ def index(request):
 
     #장르 추출
     genres = set()
+    recommendation = []
     if request.user.is_authenticated:
         user = request.user
         like_movies = user.like_movies.all()
@@ -25,30 +26,27 @@ def index(request):
             for genre in list(movie.genres.all().values('name')):
                 genres.add(genre['name'])
 
-    #추천
-    not_watched = []
-    recommendation = []
-    for movie in movies:
-        if movie not in user.like_movies.all():
-            not_watched.append(movie)
-    #print(not_watched)
+        #추천
+        not_watched = []
 
-    while len(recommendation) < 10:
-        rand_int = random.randrange(len(movies)-len(not_watched))
-        shuffle(not_watched)
-        not_watched_movie_genres = []
-        for j in list(not_watched[rand_int].genres.all().values('name')):
-            not_watched_movie_genres.append(j['name'])
-        #print(not_watched_movie_genres)
-        for temp_genre in not_watched_movie_genres:
-            if temp_genre in genres:
-                recommendation.append(not_watched[rand_int])
-                break
+        for movie in movies:
+            if movie not in user.like_movies.all():
+                not_watched.append(movie)
 
-    print(recommendation)
+
+        while len(recommendation) < 10:
+            rand_int = random.randrange(len(movies)-len(not_watched))
+            shuffle(not_watched)
+            not_watched_movie_genres = []
+            for j in list(not_watched[rand_int].genres.all().values('name')):
+                not_watched_movie_genres.append(j['name'])
+
+            for temp_genre in not_watched_movie_genres:
+                if temp_genre in genres:
+                    recommendation.append(not_watched[rand_int])
+                    break
 
     context = {
-
         'movies':movies,
         'page_obj':page_obj,
         'recom_top_five': recommendation[:5],
@@ -84,6 +82,7 @@ def detail(request, movie_pk):
 
     }
     return JsonResponse(context)
+
 
 @login_required
 def like(request, movie_pk):
