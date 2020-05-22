@@ -34,7 +34,7 @@ def index(request):
     #print(not_watched)
 
     while len(recommendation) < 10:
-        rand_int = random.randrange(len(movies))
+        rand_int = random.randrange(len(movies)-len(not_watched))
         shuffle(not_watched)
         not_watched_movie_genres = []
         for j in list(not_watched[rand_int].genres.all().values('name')):
@@ -104,33 +104,3 @@ def like(request, movie_pk):
 
     return JsonResponse(context)
 
-#recommendation
-'''
-@login_required
-def recommend(request):
-    user = request.user
-    like_movies = user.like_movies.all().values('genre')
-    genre_count = {}
-    for genre in like_movies:
-        if genre not in genre_count.keys():
-           genre_count[genre] = 1
-        else:
-            genre_count[genre] += 1
-    top_genres = sorted(genre_count.values(), key=operator.itemgetter(1))[:10]
-    recommendation = []
-    i = 0
-    while i < 10:
-        movies = Movie.objects.all().values('genres')
-        shuffle(movies)
-        random_index = range(0,movies.length)
-        if movies[random_index] in top_genres:
-            recommendation.append(movies[random_index])
-            i += 1
-        else:
-            continue
-    context = {
-        "recommendation": recommendation,
-    }
-
-    return render(request, 'movies/index.html', context)
-'''
