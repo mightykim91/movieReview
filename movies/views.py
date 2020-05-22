@@ -18,7 +18,7 @@ def index(request):
     #장르 추출
     genres = set()
     recommendation = []
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.like_movies.all():
         user = request.user
         like_movies = user.like_movies.all()
 
@@ -45,6 +45,11 @@ def index(request):
                 if temp_genre in genres:
                     recommendation.append(not_watched[rand_int])
                     break
+
+    elif request.user.is_authenticated and not request.user.like_movies.all():
+        for i in range(10):
+            rand_idx = random.randrange(len(movies))
+            recommendation.append(movies[rand_idx])
 
     context = {
         'movies':movies,

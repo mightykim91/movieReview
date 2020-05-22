@@ -2,9 +2,17 @@
 {% load bootstrap4 %}
 
 {% block body %}
+{% if request.resolver_match.url_name == "signup" %}
+    <h2><font color="white">회원가입</font></h2>
+{% else %}
+    <h2><font color="white">로그인</font></h2>
+{% endif %}
+
+<div class="p-2" style="background-color:white">
     <form action="" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
         <button class="btn btn-primary">완료</button>
     </form>
+</div>
 {% endblock %}
